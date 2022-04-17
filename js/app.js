@@ -1,75 +1,93 @@
-/** Navigation Section - Creating Dynamic Elements **/
+// define variables for selecting & creating Navigation bar elements
+let navSec = document.querySelectorAll("section");
+let ul = document.querySelector("ul");
+let navFragment = document.createDocumentFragment();
 
-// get all sections, make it ARRAY by spread method and store it in constant variable
-const sectionElements = [...document.querySelectorAll("section")];
-
-// create a fragment (not actual Node) to reduce reflow and repaint that will occurs from looping => for best performance
-const fragment = document.createDocumentFragment();
-
-// looping over sections to define dynmically navbar
-sectionElements.map((ele) => {
-  // creating li elements and storing it to lists variable
+for (let i = 0; i < navSec.length; i++) {
   let lists = document.createElement("li");
-
-  // creating a elements and storing it to anchorTag variable
-  let anchorTag = document.createElement("a");
-
-  // getting data-nav value and storing it to datanav variable
-  let dataNav = ele.getAttribute("data-nav");
-
-  // creating text Node to set the data nav into it
-  let navText = document.createTextNode(dataNav);
-
-  anchorTag.appendChild(navText); // appending the name of section to the anchor tag => <a>Section 1, ...</a>
+  let anchorTag = document.createElement("a"); // appending the name of section to the anchor tag => <a>Section 1, ...</a>
+  anchorTag.innerText = `Section ${i + 1}`;
   lists.appendChild(anchorTag); // appending the anchor tag to li elements => <li> <a>Section 1, ...</a> </li>
-  fragment.appendChild(lists); // appending li to the fragment to append it to the ul element after looping in order to improve performance
+  navFragment.appendChild(lists); // appending li to the fragment to append it to the ul element after looping in order to improve performance
+}
 
-  // link each section with its relational list in navigation bar
-  lists.addEventListener("click", () => ele.scrollIntoView({ behavior: "smooth" }) );
-});
+ul.appendChild(navFragment); // adding the final elements into the dom <ul> <li> <a> Text... </a> </li></ul>
+
+// creating a function that counts how many lists and show them in the nav bar
+function add() {
+  let navSec = document.querySelectorAll("section");
+  let ul = document.querySelector("ul");
+  let navFragment = document.createDocumentFragment();
+
+  navSec.forEach(function (e) {
+    let lists = document.createElement("li");
+    let anchorTag = document.createElement("a");
+    lists.classList.add("li");
+    let dataNav = e.getAttribute("data-nav");
+    anchorTag.innerText = dataNav;
+    lists.appendChild(anchorTag);
+    navFragment.appendChild(lists);
+  });
+  ul.appendChild(navFragment);
+
+  window.onscroll = function () { // anonymous scrolling functions to calculate the exact location of the active section
+    for (let section of activeSections) {
+      const secLocation = section.offsetTop;
+      if (secLocation < window.pageYOffset + 300) {
+        activeSections.forEach((eRemove) => {
+          eRemove.classList.remove("your-active-class");
+        });
+        section.classList.add("your-active-class");
+      }
+    }
+  };
+}
 
 // select ul element to append fragment over it
 const unorderedLists = document.querySelector("#navbar__list");
-
-// adding the final elements into the dom <ul> <li> <a> Text... </a> </li></ul>
-unorderedLists.appendChild(fragment);
+const lis = document.querySelectorAll("li");
 
 // adding default style to navigation bar
-unorderedLists.style.cssText = "background-color: #00000080; position: fixed; top: 0; right: 0; width: 100%;";
-const lis = document.querySelectorAll(".navbar__menu li");
+unorderedLists.classList.add("nav");
 for (let li of lis) {
-  li.style.cssText = "padding:1rem; cursor: pointer;";
+  li.classList.add("li");
 }
 
-/** Active Section **/
-function activeSection() {
-  sectionElements.map(function (element) {
-    // getting location of each section from the top of viewport to apply active section for
-    const location = element.getBoundingClientRect();
-    if (location.top > -10 && location.top < 150) {
-      // checking if the target section in viewport we'll remove any class from sections and adding new ACTIVE one to the current
-      sectionElements.map((removeClassSection) => {
-        removeClassSection.classList.remove("your-active-class");
+const activeSections = [...document.getElementsByTagName("section")];
+
+window.onscroll = function () {
+  for (let section of activeSections) {
+    const secLocation = section.offsetTop;
+    section.addEventListener("click", () =>
+      section.scrollIntoView({ behavior: "smooth" })
+    );
+    if (secLocation < window.pageYOffset + 300) {
+      activeSections.forEach((eRemove) => {
+        eRemove.classList.remove("your-active-class");
       });
-      element.classList.toggle("your-active-class");
+      section.classList.add("your-active-class");
 
-      /** Active List **/
-      // we're getting the Section name THAT in the viewport to link it with the nav bar later
-      const nameOfList = element.getAttribute("data-nav");
-
-      // checking that each list don't have activeClass attribute then adding it to the active one
+      // looping to define and style which list that related with its section
+      const data = section.getAttribute("data-nav");
       lis.forEach((li) => {
-        if (li.innerText === nameOfList) {
-          for (let liEle of lis) {
-            liEle.classList.remove("activeClass");
-          }
+        if (data === li.textContent) {
+          lis.forEach((lii) => {
+            lii.classList.remove("activeClass");
+          });
           li.classList.toggle("activeClass");
         }
       });
     }
-  });
+  }
 };
 
-
-// adding the active section function to Scroll event listener to know the location
-window.addEventListener("scroll", activeSection);
+// a loop to know the active section and listen to scroll to view the element
+lis.forEach(function (li) {
+  activeSections.forEach(function (sec) {
+    if (li.textContent === sec.getAttribute("data-nav")) {
+      li.addEventListener("click", function () {
+        sec.scrollIntoView({ behavior: "smooth" });
+      });
+    }
+  });
+});
