@@ -85,9 +85,9 @@ window.onscroll = function () {
 lis.forEach(function (li) {
   activeSections.forEach(function (sec) {
     if (li.textContent === sec.getAttribute("data-nav")) {
-      li.addEventListener("click", function () {
+      li.addEventListener("click", function (e) {
+        e.preventDefault();
         sec.scrollIntoView({ behavior: "smooth" });
-        li.preventDefault();
       });
     }
   });
