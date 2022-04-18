@@ -249,19 +249,18 @@ section.your-active-class .landing__container::after {
   background-color: #ffffff1a;
   border-bottom: 1px solid orange;
 }
-
+// for tablet's screen
 @media (max-width: 850px) {
   ul#navbar__list {
     display: flex;
     flex-wrap: wrap;
     text-align: center;
-    justify-content: space-between;
   }
   li {
     width: 20%;
   }
 }
-
+// for phones
 @media (max-width: 35em) {
   ul#navbar__list {
     display: flex;
