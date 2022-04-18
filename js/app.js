@@ -87,6 +87,7 @@ lis.forEach(function (li) {
     if (li.textContent === sec.getAttribute("data-nav")) {
       li.addEventListener("click", function () {
         sec.scrollIntoView({ behavior: "smooth" });
+        li.preventDefault();
       });
     }
   });
